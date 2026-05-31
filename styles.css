@@ -4,6 +4,10 @@
   --text: #171717;
   --muted: rgba(23, 23, 23, 0.44);
   --line: rgba(23, 23, 23, 0.05);
+  --cursor-x: 50%;
+  --cursor-y: 50%;
+  --flow-x: 0;
+  --flow-y: 0;
 }
 
 * {
@@ -17,7 +21,15 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--bg);
+  background:
+    linear-gradient(
+      120deg,
+      rgba(103, 35, 52, 0.045),
+      transparent 32%,
+      rgba(103, 35, 52, 0.032) 68%,
+      transparent
+    ),
+    var(--bg);
   color: var(--text);
   font-family: "Syne", sans-serif;
 }
@@ -32,6 +44,68 @@ body::before {
     linear-gradient(transparent 0, transparent calc(100% - 1px), rgba(23, 23, 23, 0.012) calc(100% - 1px));
   background-size: 100% 100%, 56px 56px;
   opacity: 0.22;
+  transform: translate(
+    calc(var(--flow-x) * 0.7px),
+    calc(var(--flow-y) * 0.7px)
+  );
+  transition: opacity 180ms ease;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: -18%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at var(--cursor-x) var(--cursor-y),
+      rgba(112, 38, 58, 0.16),
+      rgba(112, 38, 58, 0.075) 18%,
+      rgba(112, 38, 58, 0.025) 38%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at calc(100% - var(--cursor-x)) calc(100% - var(--cursor-y)),
+      rgba(112, 38, 58, 0.1),
+      rgba(112, 38, 58, 0.04) 22%,
+      transparent 44%
+    ),
+    conic-gradient(
+      from calc(120deg + (var(--flow-x) * 0.45deg)) at var(--cursor-x) var(--cursor-y),
+      rgba(112, 38, 58, 0),
+      rgba(112, 38, 58, 0.09),
+      rgba(112, 38, 58, 0.035),
+      rgba(112, 38, 58, 0)
+    ),
+    linear-gradient(
+      calc(135deg + (var(--flow-y) * 0.25deg)),
+      transparent 12%,
+      rgba(112, 38, 58, 0.04) 38%,
+      transparent 62%
+    );
+  background-size: 115% 115%, 120% 120%, 100% 100%, 140% 140%;
+  filter: blur(36px);
+  opacity: 0.58;
+  transform: translate(
+    calc(var(--flow-x) * -0.9px),
+    calc(var(--flow-y) * -0.9px)
+  );
+  animation: gradient-flow 14s ease-in-out infinite alternate;
+}
+
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% 0%, 100% 100%, 50% 50%, 0% 50%;
+  }
+
+  50% {
+    background-position: 70% 28%, 24% 72%, 58% 44%, 100% 50%;
+  }
+
+  100% {
+    background-position: 100% 100%, 0% 0%, 42% 56%, 35% 50%;
+  }
 }
 
 .page-shell {
@@ -65,7 +139,7 @@ main {
 }
 
 .card-stage {
-  width: min(760px, 100%);
+  width: min(860px, 100%);
 }
 
 .card {
@@ -78,7 +152,13 @@ main {
 }
 
 .card-body {
+  position: relative;
   padding-top: 0;
+  padding-right: 11rem;
+}
+
+.identity-block {
+  max-width: 28rem;
 }
 
 .line {
@@ -103,7 +183,10 @@ main {
 }
 
 .history-rail {
-  margin-top: 0.7rem;
+  position: absolute;
+  top: 0.22rem;
+  right: 0;
+  margin: 0;
   color: var(--muted);
 }
 
@@ -177,6 +260,7 @@ main {
 
 .contact-links {
   display: flex;
+  align-items: center;
   gap: 1rem;
   margin-top: 1.4rem;
   flex-wrap: wrap;
@@ -222,6 +306,10 @@ main {
     scroll-behavior: auto;
   }
 
+  body::after {
+    animation: none;
+  }
+
   .reveal {
     opacity: 1;
     transform: none;
@@ -238,8 +326,11 @@ main {
     width: 100%;
   }
 
+  .card-body {
+    padding-right: 8.6rem;
+  }
+
   .history-rail {
-    margin-top: 1rem;
     margin-bottom: 0.2rem;
   }
 
