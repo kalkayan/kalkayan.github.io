@@ -243,7 +243,18 @@ a {
   flex: 1;
   overflow: hidden;
   background: var(--paper-dark);
-  clip-path: polygon(0 4.8%, 100% 0, 100% 100%, 0 96%);
+  border: 1px solid var(--line);
+}
+
+.portrait-frame::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  width: 2.5rem;
+  height: 0.28rem;
+  background: var(--accent);
 }
 
 .portrait-frame::after {
@@ -268,7 +279,7 @@ a {
 }
 
 .portrait-wrap figcaption {
-  padding-top: 0.75rem;
+  padding-top: 0.68rem;
   display: flex;
   justify-content: space-between;
   color: var(--muted);
