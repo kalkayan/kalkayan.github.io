@@ -1,61 +1,49 @@
-const revealItems = document.querySelectorAll(".reveal");
 const root = document.documentElement;
+const revealItems = document.querySelectorAll(".reveal");
+const localTime = document.querySelector("#local-time");
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+revealItems.forEach((item, index) => {
+  item.style.transitionDelay = `${Math.min(index * 85, 510)}ms`;
+  requestAnimationFrame(() => item.classList.add("is-visible"));
+});
+
+const updateLocalTime = () => {
+  const time = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Dublin",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date());
+
+  localTime.textContent = `Dublin ${time}`;
+};
+
+updateLocalTime();
+setInterval(updateLocalTime, 30_000);
+
 if (!reduceMotion) {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        }
-      });
+  let currentX = 0;
+  let currentY = 0;
+  let targetX = 0;
+  let targetY = 0;
+
+  window.addEventListener(
+    "pointermove",
+    (event) => {
+      targetX = (event.clientX / window.innerWidth - 0.5) * 20;
+      targetY = (event.clientY / window.innerHeight - 0.5) * 20;
     },
-    {
-      threshold: 0.18,
-      rootMargin: "0px 0px -8% 0px",
-    }
+    { passive: true }
   );
 
-  revealItems.forEach((item, index) => {
-    item.style.transitionDelay = `${Math.min(index * 60, 180)}ms`;
-    observer.observe(item);
-  });
-} else {
-  revealItems.forEach((item) => item.classList.add("is-visible"));
-}
-
-if (!reduceMotion) {
-  const pointer = {
-    currentX: window.innerWidth / 2,
-    currentY: window.innerHeight / 2,
-    targetX: window.innerWidth / 2,
-    targetY: window.innerHeight / 2,
+  const renderPointerDepth = () => {
+    currentX += (targetX - currentX) * 0.07;
+    currentY += (targetY - currentY) * 0.07;
+    root.style.setProperty("--pointer-x", currentX.toFixed(2));
+    root.style.setProperty("--pointer-y", currentY.toFixed(2));
+    requestAnimationFrame(renderPointerDepth);
   };
 
-  const updatePointer = (event) => {
-    pointer.targetX = event.clientX;
-    pointer.targetY = event.clientY;
-  };
-
-  const animateBackground = () => {
-    pointer.currentX += (pointer.targetX - pointer.currentX) * 0.08;
-    pointer.currentY += (pointer.targetY - pointer.currentY) * 0.08;
-
-    const xPercent = (pointer.currentX / window.innerWidth) * 100;
-    const yPercent = (pointer.currentY / window.innerHeight) * 100;
-    const xOffset = xPercent - 50;
-    const yOffset = yPercent - 50;
-
-    root.style.setProperty("--cursor-x", `${xPercent}%`);
-    root.style.setProperty("--cursor-y", `${yPercent}%`);
-    root.style.setProperty("--flow-x", xOffset.toFixed(2));
-    root.style.setProperty("--flow-y", yOffset.toFixed(2));
-
-    requestAnimationFrame(animateBackground);
-  };
-
-  window.addEventListener("pointermove", updatePointer, { passive: true });
-  requestAnimationFrame(animateBackground);
+  requestAnimationFrame(renderPointerDepth);
 }
