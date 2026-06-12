@@ -6,6 +6,12 @@
   --muted: rgba(21, 20, 18, 0.57);
   --pointer-x: 0;
   --pointer-y: 0;
+  --mx: 50vw;
+  --my: 50vh;
+  --rx: 50vw;
+  --ry: 50vh;
+  --dx: 50vw;
+  --dy: 50vh;
 }
 
 * {
@@ -21,9 +27,33 @@ body {
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
-  background: var(--paper);
   color: var(--ink);
   font-family: "Manrope", sans-serif;
+  background-color: var(--paper);
+  background-image: linear-gradient(
+    115deg,
+    #e9e5dc 0%,
+    #ede8de 22%,
+    #e4ddcf 46%,
+    rgba(225, 67, 47, 0.06) 60%,
+    #e8e2d6 78%,
+    #e9e5dc 100%
+  );
+  background-size: 240% 240%;
+  background-position: 0% 50%;
+  animation: paper-drift 26s ease-in-out infinite alternate;
+}
+
+@keyframes paper-drift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: 60% 100%;
+  }
 }
 
 a {
@@ -38,6 +68,102 @@ a {
   opacity: 0.16;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.38'/%3E%3C/svg%3E");
   mix-blend-mode: multiply;
+}
+
+/* Cursor-driven ambient light raking across the paper */
+.cursor-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    24rem 24rem at var(--mx) var(--my),
+    rgba(225, 67, 47, 0.13),
+    rgba(225, 67, 47, 0.04) 38%,
+    transparent 64%
+  );
+  mix-blend-mode: multiply;
+  transition: opacity 600ms ease;
+}
+
+/* Custom "ink" cursor — a trailing ring and a precise dot */
+.cursor-ring,
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 30;
+  pointer-events: none;
+  border-radius: 50%;
+  opacity: 0;
+  display: none;
+}
+
+.cursor-ring {
+  width: 2.1rem;
+  height: 2.1rem;
+  margin: -1.05rem 0 0 -1.05rem;
+  border: 1px solid var(--accent);
+  transform: translate(var(--rx), var(--ry)) scale(var(--ring-scale, 1));
+  transition: opacity 350ms ease, width 250ms ease, height 250ms ease,
+    background-color 250ms ease, border-color 250ms ease,
+    transform 120ms ease-out;
+  will-change: transform;
+}
+
+.cursor-dot {
+  width: 0.34rem;
+  height: 0.34rem;
+  margin: -0.17rem 0 0 -0.17rem;
+  background: var(--accent);
+  transform: translate(var(--dx), var(--dy));
+  transition: opacity 350ms ease, transform 60ms linear;
+  will-change: transform;
+}
+
+/* Only take over the cursor where a real pointer exists */
+@media (hover: hover) and (pointer: fine) {
+  .js.cursor-ready {
+    cursor: none;
+  }
+
+  .js.cursor-ready a,
+  .js.cursor-ready button {
+    cursor: none;
+  }
+
+  .js.cursor-ready .cursor-ring,
+  .js.cursor-ready .cursor-dot {
+    display: block;
+  }
+
+  .cursor-ready.cursor-active .cursor-glow,
+  .cursor-ready.cursor-active .cursor-ring,
+  .cursor-ready.cursor-active .cursor-dot {
+    opacity: 1;
+  }
+
+  /* Cursor swells and fills over interactive targets */
+  .cursor-ready.cursor-hot .cursor-ring {
+    --ring-scale: 1.9;
+    background: rgba(225, 67, 47, 0.12);
+    border-color: var(--accent);
+  }
+
+  .cursor-ready.cursor-hot .cursor-dot {
+    opacity: 0;
+  }
+
+  /* Tactile press: ring contracts briefly on click */
+  .cursor-ready.cursor-down .cursor-ring {
+    --ring-scale: 0.8;
+    background: rgba(225, 67, 47, 0.18);
+  }
+
+  .cursor-ready.cursor-down.cursor-hot .cursor-ring {
+    --ring-scale: 1.55;
+  }
 }
 
 .site-header {
@@ -193,6 +319,36 @@ a {
 .title-line-accent span {
   color: var(--accent);
   -webkit-text-stroke: 0;
+}
+
+/* Cursor "inks in" the headline: accent bleeds into the letters it passes */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .js .title-line {
+    background-image: radial-gradient(
+      13rem 13rem at var(--tmx, 50%) var(--tmy, -40%),
+      var(--accent),
+      var(--ink) 56%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Keep the outlined treatment, but let accent flood the hollow letters */
+  .js .title-line-accent {
+    background-image: radial-gradient(
+      12rem 12rem at var(--tmx, 50%) var(--tmy, -40%),
+      var(--accent),
+      transparent 52%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .js .title-line-accent span {
+    -webkit-text-fill-color: var(--accent);
+  }
 }
 
 .hero-intro {
@@ -614,5 +770,17 @@ a {
   .reveal {
     transform: none !important;
     transition: none !important;
+  }
+
+  .cursor-glow,
+  .cursor-ring,
+  .cursor-dot {
+    display: none !important;
+    opacity: 0 !important;
+  }
+
+  body {
+    animation: none !important;
+    background-position: 0% 50% !important;
   }
 }
