@@ -301,7 +301,7 @@ a {
   width: min-content;
   margin: 0;
   font-size: clamp(6.5rem, 14vw, 14rem);
-  line-height: 0.68;
+  line-height: 0.80;
   font-weight: 800;
   letter-spacing: -0.11em;
 }
