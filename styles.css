@@ -45,15 +45,9 @@ body {
 }
 
 @keyframes paper-drift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 0%;
-  }
-  100% {
-    background-position: 60% 100%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 0%; }
+  100% { background-position: 60% 100%; }
 }
 
 a {
@@ -70,7 +64,6 @@ a {
   mix-blend-mode: multiply;
 }
 
-/* Cursor-driven ambient light raking across the paper */
 .cursor-glow {
   position: fixed;
   inset: 0;
@@ -87,7 +80,6 @@ a {
   transition: opacity 600ms ease;
 }
 
-/* Custom "ink" cursor — a trailing ring and a precise dot */
 .cursor-ring,
 .cursor-dot {
   position: fixed;
@@ -122,7 +114,6 @@ a {
   will-change: transform;
 }
 
-/* Only take over the cursor where a real pointer exists */
 @media (hover: hover) and (pointer: fine) {
   .js.cursor-ready {
     cursor: none;
@@ -144,7 +135,6 @@ a {
     opacity: 1;
   }
 
-  /* Cursor swells and fills over interactive targets */
   .cursor-ready.cursor-hot .cursor-ring {
     --ring-scale: 1.9;
     background: rgba(225, 67, 47, 0.12);
@@ -155,7 +145,6 @@ a {
     opacity: 0;
   }
 
-  /* Tactile press: ring contracts briefly on click */
   .cursor-ready.cursor-down .cursor-ring {
     --ring-scale: 0.8;
     background: rgba(225, 67, 47, 0.18);
@@ -165,6 +154,8 @@ a {
     --ring-scale: 1.55;
   }
 }
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
 
 .site-header {
   position: fixed;
@@ -251,6 +242,8 @@ a {
   color: var(--accent);
 }
 
+/* ── Hero layout ─────────────────────────────────────────────────────────── */
+
 .hero {
   position: relative;
   min-height: 100svh;
@@ -271,6 +264,9 @@ a {
   letter-spacing: 0.1em;
   writing-mode: vertical-rl;
 }
+
+
+/* ── Hero copy ───────────────────────────────────────────────────────────── */
 
 .hero-copy {
   position: relative;
@@ -297,6 +293,8 @@ a {
   border-top: 1px solid currentColor;
 }
 
+/* ── Big title + per-letter hover ────────────────────────────────────────── */
+
 .hero-title {
   width: min-content;
   margin: 0;
@@ -310,18 +308,28 @@ a {
   display: block;
 }
 
+/* Each letter lights up individually on hover */
+.l {
+  display: inline;
+  transition: -webkit-text-fill-color 150ms ease;
+}
+
+.l:hover {
+  -webkit-text-fill-color: var(--accent) !important;
+}
+
 .title-line-accent {
   margin-left: clamp(2rem, 8vw, 8rem);
   color: var(--paper);
   -webkit-text-stroke: 1.5px var(--ink);
 }
 
-.title-line-accent span {
+.accent-dot {
   color: var(--accent);
   -webkit-text-stroke: 0;
 }
 
-/* Cursor "inks in" the headline: accent bleeds into the letters it passes */
+/* Cursor "inks in" the headline */
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
   .js .title-line {
     background-image: radial-gradient(
@@ -334,7 +342,6 @@ a {
     -webkit-text-fill-color: transparent;
   }
 
-  /* Keep the outlined treatment, but let accent flood the hollow letters */
   .js .title-line-accent {
     background-image: radial-gradient(
       12rem 12rem at var(--tmx, 50%) var(--tmy, -40%),
@@ -346,10 +353,18 @@ a {
     -webkit-text-fill-color: transparent;
   }
 
-  .js .title-line-accent span {
+  .js .title-line-accent .accent-dot {
+    -webkit-text-fill-color: var(--accent);
+  }
+
+  /* Letter hover overrides the gradient with a solid accent */
+  .js .title-line .l:hover,
+  .js .title-line-accent .l:hover {
     -webkit-text-fill-color: var(--accent);
   }
 }
+
+/* ── Hero intro ──────────────────────────────────────────────────────────── */
 
 .hero-intro {
   width: min(27rem, 36vw);
@@ -374,6 +389,8 @@ a {
   line-height: 1.6;
   letter-spacing: -0.025em;
 }
+
+/* ── Portrait ────────────────────────────────────────────────────────────── */
 
 .portrait-wrap {
   position: fixed;
@@ -426,12 +443,14 @@ a {
   font-size: 0.46rem;
 }
 
+/* ── Career / experience section ─────────────────────────────────────────── */
+
 .career {
   position: relative;
   z-index: 6;
   grid-column: 1;
   grid-row: 2;
-  width: min(24rem, calc(100% - 7.25rem));
+  width: min(32rem, calc(100% - 7.25rem));
   margin: 0 0 2.5rem clamp(5rem, 8vw, 8.5rem);
 }
 
@@ -445,7 +464,7 @@ a {
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   list-style: none;
   border-top: 1px solid var(--line);
 }
@@ -460,7 +479,7 @@ a {
   padding-left: 0.5rem;
 }
 
-.career-item:nth-child(2) {
+.career-item:nth-child(n+2) {
   padding-left: 0.5rem;
 }
 
@@ -493,6 +512,13 @@ a {
   font-size: 0.48rem;
   line-height: 1.35;
 }
+
+.is-indie .career-year {
+  color: var(--accent);
+  opacity: 0.7;
+}
+
+/* ── Project card (removed from hero, kept for mobile flow) ──────────────── */
 
 .project-card {
   position: absolute;
@@ -544,6 +570,8 @@ a {
   opacity: 0.62;
 }
 
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+
 .hero-footer {
   position: relative;
   z-index: 9;
@@ -575,6 +603,8 @@ a {
   color: var(--accent);
 }
 
+/* ── Reveal animation ────────────────────────────────────────────────────── */
+
 .js .reveal {
   opacity: 0;
   transform: translateY(18px);
@@ -595,14 +625,11 @@ a {
 }
 
 @keyframes pulse {
-  70% {
-    box-shadow: 0 0 0 0.38rem rgba(225, 67, 47, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(225, 67, 47, 0);
-  }
+  70% { box-shadow: 0 0 0 0.38rem rgba(225, 67, 47, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(225, 67, 47, 0); }
 }
 
+/* ── Responsive ──────────────────────────────────────────────────────────── */
 
 @media (max-width: 1100px) {
   .site-header {
@@ -663,6 +690,10 @@ a {
     display: none;
   }
 
+  .hero-bg-co {
+    display: none;
+  }
+
   .hero-copy {
     order: 1;
     padding: 3rem 1rem 2.5rem;
@@ -711,22 +742,9 @@ a {
     display: block;
   }
 
-  .career-list {
-    grid-template-columns: 1fr;
-  }
-
-  .career-item,
-  .career-item:nth-child(2),
-  .career-item:last-child {
-    padding: 0.85rem 0;
-    display: grid;
-    grid-template-columns: 4rem 1fr;
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .career-year {
-    grid-row: span 2;
+  .career-item {
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .project-card {
@@ -769,6 +787,10 @@ a {
   .project-card,
   .reveal {
     transform: none !important;
+    transition: none !important;
+  }
+
+  .l {
     transition: none !important;
   }
 
